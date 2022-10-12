@@ -5,7 +5,7 @@ const { Server } = require("socket.io");
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const xssClean = require('xss-clean');
-const { HOST, PORT } = require('./helpers/env');
+const { HOST, PORT, APP_URL } = require('./helpers/env');
 const app = express();
 app.use(xssClean());
 app.use(cors());
@@ -57,5 +57,5 @@ io.on("connection", (socket) => {
 })
 
 httpServer.listen(PORT,()=>{
-    console.log(`${HOST}${PORT}`);
+    console.log(`${APP_URL}`);
 })
