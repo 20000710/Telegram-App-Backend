@@ -108,6 +108,7 @@ const userController = {
         }
     },
     usersUpdate: async (req, res) => {
+        console.log('req-body: ', req.body);
         try {
             const id = req.APP_DATA.tokenDecoded.id;
             const { name, email, phone } = req.body;

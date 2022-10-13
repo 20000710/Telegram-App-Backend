@@ -28,6 +28,57 @@ app.use(express.static('public'));
 app.use(require('./routes/auth.route'))
 app.use(require('./routes/users.route'))
 
+
+// io.use((socket, next) => {
+//     const username = socket.handshake.auth.username;
+//     if (!username) {
+//       return next(new Error("invalid username"));
+//     }
+//     socket.username = username;
+//     next();
+// });
+
+// io.use((socket, next) => {
+//     const username = socket.handshake.auth.username;
+//     if (!username) {
+//         return next(new Error("invalid username"));
+//     }
+//     socket.username = username;
+//     next();
+// });
+
+// io.on("connection", (socket) => {
+//     // fetch existing users
+//     const users = [];
+//     for (let [id, socket] of io.of("/").sockets) {
+//         users.push({
+//             userID: id,
+//             username: socket.username,
+//         });
+//     }
+//     socket.emit("users", users);
+
+//     // notify existing users
+//     socket.broadcast.emit("user connected", {
+//         userID: socket.id,
+//         username: socket.username,
+//     });
+
+//     // forward the private message to the right recipient
+//     socket.on("private message", ({ content, to }) => {
+//         socket.to(to).emit("private message", {
+//             content,
+//             from: socket.id,
+//         });
+//     });
+
+//     // notify users upon disconnection
+//     socket.on("disconnect", () => {
+//         socket.broadcast.emit("user disconnected", socket.id);
+//     });
+// });  
+var clients =[];
+
 io.on("connection", (socket) => {
     console.log(`ada perangkat yang terhubung dengan id ${socket.id}`)
     socket.on('messageAll', ({ message, user }) => {
@@ -51,11 +102,17 @@ io.on("connection", (socket) => {
         let time = current.toLocaleTimeString();
         io.to(room).emit('newMessage', {sender,message,date:time})
     })
+    socket.on('storeClientInfo', (data) => {
+        let clientInfo = new Object();
+        clientInfo.customId  = data.customId;
+        clientInfo.clientId  = socket.id;
+        clients.push(clientInfo);
+    });
     socket.on('disconnect',()=>{
         console.log(`ada perangkat yang terputus dengan id ${socket.id}`);
     })
 })
 
-httpServer.listen(PORT,()=>{
+httpServer.listen(PORT, () => {
     console.log(`${APP_URL}`);
 })
